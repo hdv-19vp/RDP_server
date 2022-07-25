@@ -40,24 +40,40 @@ public class Functions {
 
     }
 
-    public static void startApp(String appName){
-        try {
-            String cmd = "cmd.exe /c" + "start " + appName + ".exe";
-            Process p = Runtime.getRuntime().exec( cmd);
+    public static boolean startApp(String appName){
 
+        try {
+            String cmd = "powershell " + "start " + appName + ".exe";
+            Process p = Runtime.getRuntime().exec(cmd);
+
+            BufferedReader input = new BufferedReader(new InputStreamReader(p.getErrorStream()));
+            //System.out.println(input.readLine());
+            if(input.readLine() != null){
+                return false;
+            }
+            input.close();
         } catch (IOException e) {
             e.printStackTrace();
+            return false;
         }
+        return true;
     }
 
-    public static void startProccess(String processName){
+    public static boolean startProccess(String processName){
         try {
-            String cmd = "cmd.exe /c" + "start " + processName + ".exe";
-            Process p = Runtime.getRuntime().exec( cmd);
+            String cmd = "powershell " + "start " + processName + ".exe";
+            Process p = Runtime.getRuntime().exec(cmd);
+            BufferedReader input = new BufferedReader(new InputStreamReader(p.getErrorStream()));
+            if(input.readLine() != null){
+                return false;
+            }
+            input.close();
 
         } catch (IOException e) {
             e.printStackTrace();
+            return false;
         }
+        return true;
 
     }
 
@@ -124,7 +140,7 @@ public class Functions {
             keyboardHook.addKeyListener(new GlobalKeyAdapter() {
                 @Override
                 public void keyPressed(GlobalKeyEvent event) {
-                    System.out.println(new Date() + " - " + event.getKeyChar() + " - " + event);
+                    //System.out.println(new Date() + " - " + event.getKeyChar() + " - " + event);
                     listKeypress.add(event.getVirtualKeyCode());
                 }
             });
