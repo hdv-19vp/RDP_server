@@ -12,6 +12,89 @@ import java.util.Arrays;
 import java.util.Calendar;
 
 public class Functions {
+    public static BufferedReader getProcess(){
+        BufferedReader input = null;
+        try {
+            Process p = Runtime.getRuntime().exec("tasklist");
+            input = new BufferedReader(new InputStreamReader(p.getInputStream()));
+        } catch (Exception err) {
+            err.printStackTrace();
+        }
+        return input;
+    }
+
+
+    public static BufferedReader getApp(){
+        BufferedReader input = null;
+        try {
+            Process p = Runtime.getRuntime().exec("powershell \"gps | where {$_.MainWindowTitle } | select id, name");
+            input = new BufferedReader(new InputStreamReader(p.getInputStream()));
+
+        } catch (Exception err) {
+            err.printStackTrace();
+        }
+        return input;
+
+    }
+
+    public static void startApp(String appName){
+        try {
+            String cmd = "cmd.exe /c" + "start " + appName + ".exe";
+            Process p = Runtime.getRuntime().exec( cmd);
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void startProccess(String processName){
+        try {
+            String cmd = "cmd.exe /c" + "start " + processName + ".exe";
+            Process p = Runtime.getRuntime().exec( cmd);
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+
+    public static boolean killProcess(String PID){
+        try {
+            Process p = Runtime.getRuntime().exec("powershell " +" taskkill /PID " + PID );
+            BufferedReader input = new BufferedReader(new InputStreamReader(p.getInputStream()));
+            if(input.readLine() == null){
+                return false;
+            }
+            input.close();
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+            return false;
+        }
+        return true;
+
+    }
+
+
+    public static boolean killApp(String PID){
+        try {
+            Process p = Runtime.getRuntime().exec("powershell " +" taskkill /PID " + PID );
+            BufferedReader input = new BufferedReader(new InputStreamReader(p.getInputStream()));
+            if(input.readLine() == null){
+                return false;
+            }
+            input.close();
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+            return false;
+        }
+        return true;
+    }
+
+
+
     public static void shutDown(){
         try {
             Runtime.getRuntime().exec("shutdown /s");
@@ -22,85 +105,25 @@ public class Functions {
     }
 
     public static void takeScreenShot(){
-        SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMdd hh mm ss a");
-
-        Calendar now = Calendar.getInstance();
-        Robot robot = null;
         try {
-            robot = new Robot();
-            BufferedImage screenShot = robot.createScreenCapture(new Rectangle(Toolkit.getDefaultToolkit().getScreenSize()));
-            ImageIO.write(screenShot, "JPG", new File("d:\\"+formatter.format(now.getTime())+".jpg"));
+            BufferedImage screenShot =  new Robot().createScreenCapture(new Rectangle(Toolkit.getDefaultToolkit().getScreenSize()));
+            ImageIO.write(screenShot, "JPG", new File("D:\\screenshot.jpg"));
         } catch (AWTException | IOException e) {
             e.printStackTrace();
         }
 
     }
 
-    public static void getProcess(){
-        try {
-            String line;
-            Process p = Runtime.getRuntime().exec("tasklist");
-            BufferedReader input = new BufferedReader(new InputStreamReader(p.getInputStream()));
-            while ((line = input.readLine()) != null) {
-                System.out.println(line); //<-- Parse data here.
-            }
-            input.close();
-        } catch (Exception err) {
-            err.printStackTrace();
-        }
-    }
-
-    public static void getApp(){
-        try {
-            String line;
-            Process p = Runtime.getRuntime().exec("powershell \"gps | where {$_.MainWindowTitle } | select id, name");
-            BufferedReader input = new BufferedReader(new InputStreamReader(p.getInputStream()));
-            while ((line = input.readLine()) != null) {
-                System.out.println(Arrays.toString(line.split("\s+"))); //<-- Parse data here.
-            }
-            input.close();
-        } catch (Exception err) {
-            err.printStackTrace();
-        }
-    }
-
-    public static void killProcess(String PID){
-        try {
-            Process p = Runtime.getRuntime().exec("taskkill /PID" + PID );
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-    }
 
 
-    public static void killApp(String PID){
-        try {
-            Process p = Runtime.getRuntime().exec("taskkill /PID" + PID );
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
+
+
+
 
     public static void getKeyStroke(){
 
     }
 
 
-    public static void startApp(String appName){
-        try {
-            Process p = Runtime.getRuntime().exec("taskkill /PID" + appName + ".exe" );
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
 
-    public static void startProccess(String processName){
-        try {
-            Process p = Runtime.getRuntime().exec("taskkill /PID" + processName + ".exe" );
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-    }
 }
